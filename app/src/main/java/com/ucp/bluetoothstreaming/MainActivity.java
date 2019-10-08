@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class activity_client extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
