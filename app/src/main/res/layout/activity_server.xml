@@ -10,10 +10,34 @@
         android:id="@+id/downloadButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start download"
         android:onClick="startDownload"
+        android:text="Start download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.125"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.815" />
+
+    <ProgressBar
+        android:id="@+id/downloadProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/downloadButton"
+        app:layout_constraintEnd_toEndOf="@+id/downloadButton"
+        app:layout_constraintStart_toStartOf="@+id/downloadButton"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Switch
+        android:id="@+id/ShareSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable sharing "
+        android:onClick="switchActivated"
+        app:layout_constraintBottom_toBottomOf="@+id/downloadButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/downloadButton"
+        app:layout_constraintTop_toTopOf="@+id/downloadButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
