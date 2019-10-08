@@ -44,22 +44,14 @@ public class ClientActivity extends AppCompatActivity {
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
+            Log.i("IS ENABLED", "FINISH " );
 
 
         }
 
 
-        Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
-        if (PairedDevices.size() > 0) {
-            for (BluetoothDevice dev : PairedDevices) {
-                discoveredDevices.add(dev);
-                Log.i("PAIRED", "Added " + dev.getName());
 
-            }
-        }
         registerReceiver(receiver, filter);
-        bluetoothAdapter.startDiscovery();
 
 
     }
@@ -91,6 +83,16 @@ public class ClientActivity extends AppCompatActivity {
 
 
     public void refreshList(View view) {
+        Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
+        if (PairedDevices.size() > 0) {
+            for (BluetoothDevice dev : PairedDevices) {
+                if(!discoveredDevices.contains(dev))
+                    discoveredDevices.add(dev);
+
+            }
+        }
+
+        bluetoothAdapter.startDiscovery();
 
         ListView listView = findViewById(R.id.listView);
         ArrayList list = new ArrayList();
