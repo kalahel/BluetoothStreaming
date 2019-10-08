@@ -2,6 +2,7 @@ package com.ucp.bluetoothstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 
 public class ClientActivity extends AppCompatActivity {
@@ -11,4 +12,9 @@ public class ClientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
     }
+
+
+    BluetoothAdapter ble = BluetoothAdapter.getDefaultAdapter();
+
+
 }
