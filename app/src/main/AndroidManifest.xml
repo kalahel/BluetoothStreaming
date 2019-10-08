@@ -20,7 +20,6 @@
         android:theme="@style/AppTheme">
 
 
-
         <activity android:name=".ClientActivity"></activity>
         <activity android:name=".ServerActivity" />
         <activity android:name=".MainActivity">
