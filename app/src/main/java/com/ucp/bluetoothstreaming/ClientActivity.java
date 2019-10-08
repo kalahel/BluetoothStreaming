@@ -24,6 +24,7 @@ public class ClientActivity extends AppCompatActivity {
     public final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
     ArrayList<BluetoothDevice> discoveredDevices = new ArrayList<>();
+
     ArrayAdapter adapter;
 
     @Override
@@ -32,7 +33,6 @@ public class ClientActivity extends AppCompatActivity {
         setContentView(R.layout.activity_client);
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(receiver, filter);
 
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -45,11 +45,12 @@ public class ClientActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
+
+
         }
 
 
         Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
-        bluetoothAdapter.startDiscovery();
         if (PairedDevices.size() > 0) {
             for (BluetoothDevice dev : PairedDevices) {
                 discoveredDevices.add(dev);
@@ -57,6 +58,8 @@ public class ClientActivity extends AppCompatActivity {
 
             }
         }
+        //registerReceiver(receiver, filter);
+
 
     }
 
@@ -89,7 +92,12 @@ public class ClientActivity extends AppCompatActivity {
     public void refreshList(View view) {
 
         ListView listView = findViewById(R.id.listView);
-        ArrayAdapter<BluetoothDevice> arrayAdapter = new ArrayAdapter<BluetoothDevice>(this, android.R.layout.simple_list_item_1, discoveredDevices);
+        ArrayList list = new ArrayList();
+        for (BluetoothDevice dev: discoveredDevices)
+        {
+            list.add(dev.getName() +"     "+dev.getAddress());
+        }
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(arrayAdapter);
 
     }
