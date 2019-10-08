@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -50,26 +51,28 @@ public class ClientActivity extends AppCompatActivity {
         Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
         bluetoothAdapter.startDiscovery();
         if (PairedDevices.size() > 0) {
-            for (BluetoothDevice device : PairedDevices) {
-                discoveredDevices.add(device);
+            for (BluetoothDevice dev : PairedDevices) {
+                discoveredDevices.add(dev);
+                Log.i("PAIRED", "Added " + dev.getName());
+
             }
         }
 
     }
 
-    List<String> mArrayAdapter;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            // Quand la recherche trouve un terminal
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // On récupère l'object BluetoothDevice depuis l'Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // On ajoute le nom et l'adresse du périphérique dans un ArrayAdapter (par exemple pour l'afficher dans une ListView)
-                if(!discoveredDevices.contains(device))
-                    discoveredDevices.add(device);
+                BluetoothDevice dev = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(!discoveredDevices.contains(dev) && dev.getName()!=null) {
+                    discoveredDevices.add(dev);
+                    Log.i("NEW", "Added " + dev.getName());
 
+
+                }
             }
+
         }
     };
 
