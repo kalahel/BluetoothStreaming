@@ -58,7 +58,8 @@ public class ClientActivity extends AppCompatActivity {
 
             }
         }
-        //registerReceiver(receiver, filter);
+        registerReceiver(receiver, filter);
+        bluetoothAdapter.startDiscovery();
 
 
     }
