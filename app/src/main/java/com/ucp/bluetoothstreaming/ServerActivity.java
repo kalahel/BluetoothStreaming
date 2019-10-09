@@ -117,7 +117,8 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
 
     @Override
     public void handleTextReception(String textReceived) {
-        Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
+        if (textReceived != null)
+            Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
 
     }
 

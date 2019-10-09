@@ -42,7 +42,8 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         downloadTextView = findViewById(R.id.downloadStatusText);
 
         progressBar.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
+        downloadTextView.setVisibility(View.VISIBLE);
+        videoView.setVisibility(View.INVISIBLE);
 
         BluetoothDevice bd = getIntent().getExtras().getParcelable(ClientActivity.INTENT_SELECTOR);
         if (bd == null) {
@@ -61,19 +62,22 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         BroadcastReceiver broadcastReceiver = new ClientReceiver(this);
         IntentFilter intentFilter = new IntentFilter(FILTER);
-        localBroadcastManager.registerReceiver(broadcastReceiver,intentFilter);
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
 
     }
 
     @Override
     public void handleTextReception(String textReceived) {
-        Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
+        if (textReceived != null)
+            Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void playVideo(String textReceived) {
+        videoView.setVisibility(View.VISIBLE);
+
         MediaController mediaController = new MediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
@@ -89,8 +93,7 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         if (progress >= 96) {
             this.progressBar.setVisibility(View.INVISIBLE);
             this.downloadTextView.setVisibility(View.INVISIBLE);
-        }
-        else{
+        } else {
             this.progressBar.setProgress(progress);
         }
     }
