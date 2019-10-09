@@ -177,6 +177,15 @@ public class BluetoothServerService extends Service {
 
             try {
                 mmOutStream.write(bytes);
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mmOutStream.close();
+                Intent endIntent = new Intent(ServerActivity.FILTER);
+                endIntent.putExtra(BluetoothClientService.SEND_MESSAGE_TAG,"File transfer complete");
+                localBroadcastManager.sendBroadcast(endIntent);
 
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
