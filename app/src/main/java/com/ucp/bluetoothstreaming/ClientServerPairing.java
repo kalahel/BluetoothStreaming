@@ -78,6 +78,7 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
         Uri uri = Uri.parse(textReceived);
+
         videoView.setVideoURI(uri);
 
         videoView.start();
