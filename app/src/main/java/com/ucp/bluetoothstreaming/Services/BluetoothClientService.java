@@ -181,6 +181,8 @@ public class BluetoothClientService extends Service {
                         fileDescriptor.sync();
 
 
+
+
                         Log.d(TAG, "Nbs of paquets received  AFTER: " + nbOfPaquetsReceived);
                     }
                 } catch (IOException se) {
