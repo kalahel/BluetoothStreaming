@@ -18,10 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ClientServerPairing"></activity>
+
         <service
             android:name=".Services.BluetoothServerService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".ClientActivity" />
         <activity android:name=".ServerActivity" />
