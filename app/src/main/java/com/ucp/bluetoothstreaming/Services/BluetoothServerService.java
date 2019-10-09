@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class BluetoothServerService extends Service {
     public static final String TAG = "BLUETOOTH_SERVER_SERVICE";
     public static final String START_ROUTINE_TAG = "START_ROUTINE_TAG";
     public static final UUID APP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9BFFFF");
+
     private final IBinder mBinder = new LocalBinder();  // interface for clients that bind
     private BluetoothServerSocket mmServerSocket;
+    private LocalBroadcastManager localBroadcastManager;
     private Thread serverThread;
     int mStartMode;                                     // indicates how to behave if the service is killed
     boolean mAllowRebind;                               // indicates whether onRebind should be used
@@ -40,6 +44,8 @@ public class BluetoothServerService extends Service {
         super.onCreate();
         Log.d("BLUETOOTH SERVER SERVICE", "Service created");
         this.serverThread = new AcceptThread();
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
     }
 
     @Override
@@ -146,6 +152,11 @@ public class BluetoothServerService extends Service {
         private void manageMyConnectedSocket(BluetoothSocket socket) {
             // TODO FIll
             Log.d(TAG, "Client connected");
+            Log.d(TAG, "Connected to the server !");
+            Intent intent = new Intent(ServerActivity.FILTER);
+            intent.putExtra(BluetoothClientService.SEND_MESSAGE_TAG,"A client is connected to you");
+            localBroadcastManager.sendBroadcast(intent);
+
             try {
                 mmOutStream = socket.getOutputStream();
             } catch (IOException e) {

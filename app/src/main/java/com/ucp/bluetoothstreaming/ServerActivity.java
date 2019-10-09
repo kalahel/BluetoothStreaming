@@ -1,11 +1,14 @@
 package com.ucp.bluetoothstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.ucp.bluetoothstreaming.Services.BluetoothServerService;
+import com.ucp.bluetoothstreaming.Services.ClientReceiver;
+import com.ucp.bluetoothstreaming.Services.Displayable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,13 +34,15 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class ServerActivity extends AppCompatActivity {
+public class ServerActivity extends AppCompatActivity implements Displayable {
     public static final String VIDEO_URL = "https://ia800201.us.archive.org/22/items/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
     public static final String OUTPUT_FILE_NAME = "projectVideo.mp4";
     public static final int REQUEST_ENABLE_BT = 16;
+    public static final String FILTER = "com.app.ucp.bluetoothstreaming.ServerActivity.FILTER";
     private Switch ShareSwitch;
     private BluetoothServerService bluetoothServerService;
     private boolean mBound = false;
+    private LocalBroadcastManager localBroadcastManager;
 
 
     @Override
@@ -57,6 +64,13 @@ public class ServerActivity extends AppCompatActivity {
 
         Intent bluetoothServiceIntent = new Intent(this, BluetoothServerService.class);
         bindService(bluetoothServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
+
+
+        //broadcast receiver
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        BroadcastReceiver broadcastReceiver = new ClientReceiver(this);
+        IntentFilter intentFilter = new IntentFilter(FILTER);
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
     }
 
@@ -91,6 +105,11 @@ public class ServerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void handleTextReception(String textReceived) {
+        Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
+    }
+
     /**
      * Defines callbacks for service binding, passed to bindService()
      * when the service is connected start the game
@@ -111,6 +130,7 @@ public class ServerActivity extends AppCompatActivity {
             mBound = false;
         }
     };
+
 
     /**
      * Asynchronous task responsible for the download of the video
