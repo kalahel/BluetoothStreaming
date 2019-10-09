@@ -23,13 +23,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class BluetoothClientService extends Service {
 
-    private static final int BUFFER_COUNT_PAQUETS = 1000;
+    private static final int BUFFER_COUNT_PAQUETS = 3000;
     public static final String TAG = "BLUETOOTH_CLIENT_SERVICE";
     public static final String TAG_INTENT = "BLUETOOTH_CLIENT_INTENT";
     public static final String SEND_MESSAGE_TAG = "com.app.ucp.bluetoothstreaming.Services.BluetoothClient.SEND_MESSAGE";
@@ -160,7 +161,7 @@ public class BluetoothClientService extends Service {
                 if (rootFile.exists()) Log.d("SERVICE_ACTIVITY", output);
                 if (!localFile.exists()) {
                     localFile.createNewFile();
-                }else{
+                } else {
                     localFile.delete();
                     localFile.createNewFile();
                 }
@@ -169,35 +170,30 @@ public class BluetoothClientService extends Service {
                 byte[] buffer = new byte[1024];
                 int len1 = 0;
                 int nbOfPaquetsReceived = 0;
-                boolean hasbeenPlayed = false;
-
                 FileDescriptor fileDescriptor = f.getFD();
+                try {
+                    while ((len1 = inputStream.read(buffer)) > 0) {
+                        nbOfPaquetsReceived++;
+                        Log.d(TAG, "Nbs of paquets received BEFORE: " + nbOfPaquetsReceived + "  READ SIZE : " + len1);
 
-                while ((len1 = inputStream.read(buffer)) > 0) {
-                    nbOfPaquetsReceived++;
-                    Log.d(TAG, "Nbs of paquets received BEFORE: " + nbOfPaquetsReceived + "  READ SIZE : " + len1);
+                        f.write(buffer, 0, len1);
+                        f.flush();
+                        fileDescriptor.sync();
 
-                    f.write(buffer, 0, len1);
-                    //f.flush();
-                    //fileDescriptor.sync();
 
-                 /*   if (nbOfPaquetsReceived == BUFFER_COUNT_PAQUETS) {
-                        Intent i = new Intent(ClientServerPairing.FILTER);
-                        i.putExtra(PLAY_TAG, localFile.toString());
-                        localBroadcastManager.sendBroadcast(i);
-                        hasbeenPlayed = true;
+                        Log.d(TAG, "Nbs of paquets received  AFTER: " + nbOfPaquetsReceived);
                     }
-
-*/
-                    Log.d(TAG, "Nbs of paquets received  AFTER: " + nbOfPaquetsReceived);
+                } catch (IOException se) {
+                    Log.d(TAG, "Connexion CLOSED by SERVER ");
                 }
                 Log.d(TAG, "Sending Intent ");
                 f.close();
-                /*
+
+
                 Intent i = new Intent(ClientServerPairing.FILTER);
                 i.putExtra(PLAY_TAG, localFile.toString());
                 localBroadcastManager.sendBroadcast(i);
-                */
+
 
                 Log.d(TAG, "Intent Sended ");
             } catch (IOException e) {
