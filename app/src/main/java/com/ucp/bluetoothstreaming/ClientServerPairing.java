@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -28,12 +30,19 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
     VideoView videoView;
     public final static String FILTER = "com.app.ucp.bluetoothstreaming.ClientServerPairing.FILTER";
     private LocalBroadcastManager localBroadcastManager;
+    private ProgressBar progressBar;
+    private TextView downloadTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_server_pairing);
         videoView = findViewById(R.id.videoView);
+        progressBar = findViewById(R.id.downloadProgressBar);
+        downloadTextView = findViewById(R.id.downloadStatusText);
+
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         BluetoothDevice bd = getIntent().getExtras().getParcelable(ClientActivity.INTENT_SELECTOR);
         if (bd == null) {
@@ -72,6 +81,17 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         videoView.setVideoURI(uri);
 
         videoView.start();
+    }
+
+    @Override
+    public void updateProgressBar(int progress) {
+        if (progress >= 99) {
+            this.progressBar.setVisibility(View.INVISIBLE);
+            this.downloadTextView.setVisibility(View.INVISIBLE);
+        }
+        else{
+            this.progressBar.setProgress(progress);
+        }
     }
 
 

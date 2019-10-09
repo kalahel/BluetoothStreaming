@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -43,6 +44,8 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
     private BluetoothServerService bluetoothServerService;
     private boolean mBound = false;
     private LocalBroadcastManager localBroadcastManager;
+    private ProgressBar progressBar;
+    private TextView downloadTextView;
 
 
     @Override
@@ -50,6 +53,11 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
         ShareSwitch = findViewById(R.id.ShareSwitch);
+        progressBar = findViewById(R.id.downloadProgressBar);
+        downloadTextView = findViewById(R.id.downloadStatus);
+
+        progressBar.setVisibility(View.INVISIBLE);
+        downloadTextView.setVisibility(View.INVISIBLE);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -108,11 +116,19 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
     @Override
     public void handleTextReception(String textReceived) {
         Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void playVideo(String textReceived) {
 
+    }
+
+    @Override
+    public void updateProgressBar(int progress) {
+        this.progressBar.setVisibility(View.VISIBLE);
+        this.downloadTextView.setVisibility(View.VISIBLE);
+        this.progressBar.setProgress(progress);
     }
 
     /**

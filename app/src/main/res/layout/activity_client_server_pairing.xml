@@ -17,4 +17,27 @@
         app:layout_constraintVertical_bias="0.009"
         tools:layout_editor_absoluteX="0dp" />
 
+    <ProgressBar
+        android:id="@+id/downloadProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="279dp"
+        android:layout_height="9dp"
+        android:max="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/videoView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/downloadStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download status :"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/downloadProgressBar"
+        app:layout_constraintEnd_toEndOf="@+id/downloadProgressBar"
+        app:layout_constraintStart_toStartOf="@+id/downloadProgressBar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.947" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
