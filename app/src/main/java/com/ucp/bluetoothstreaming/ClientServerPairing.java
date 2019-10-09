@@ -58,7 +58,7 @@ public class ClientServerPairing extends AppCompatActivity {
 
     }
 /*
-    //partie video
+    //partie video /storage/emulated/0/Video/projectVideo.mp4
     private void PlayVideo() {
         try {
             getWindow().setFormat(PixelFormat.TRANSLUCENT);
