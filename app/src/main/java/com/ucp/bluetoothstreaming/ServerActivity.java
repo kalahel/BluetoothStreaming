@@ -85,6 +85,7 @@ public class ServerActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "NOT CHECKED", Toast.LENGTH_SHORT).show();
             Intent stopServiceIntent = new Intent(this, BluetoothServerService.class);
+            stopServiceIntent.putExtra(BluetoothServerService.START_ROUTINE_TAG, false);
             stopService(stopServiceIntent);
             mBound = false;
         }
