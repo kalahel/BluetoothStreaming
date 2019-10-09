@@ -14,6 +14,9 @@ public class ClientReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.displayable.handleTextReception(intent.getStringExtra(BluetoothClientService.SEND_MESSAGE_TAG));
+        if (intent.getStringExtra(BluetoothClientService.PLAY_TAG) != null)
+            this.displayable.playVideo(intent.getStringExtra(BluetoothClientService.PLAY_TAG));
+        else
+            this.displayable.handleTextReception(intent.getStringExtra(BluetoothClientService.SEND_MESSAGE_TAG));
     }
 }

@@ -55,21 +55,6 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
         localBroadcastManager.registerReceiver(broadcastReceiver,intentFilter);
 
 
-        //partie video
-
-
-    }
-
-    public void playVideo(View view) {
-
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-        Uri uri = Uri.parse("/storage/emulated/0/Video/projectVideo.mp4");
-        videoView.setVideoURI(uri);
-
-
-        videoView.start();
     }
 
     @Override
@@ -78,7 +63,16 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
 
     }
 
-    //partie video /storage/emulated/0/Video/projectVideo.mp4
+    @Override
+    public void playVideo(String textReceived) {
+        MediaController mediaController = new MediaController(this);
+        mediaController.setAnchorView(videoView);
+        videoView.setMediaController(mediaController);
+        Uri uri = Uri.parse(textReceived);
+        videoView.setVideoURI(uri);
+
+        videoView.start();
+    }
 
 
 }

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
@@ -17,6 +18,7 @@ import com.ucp.bluetoothstreaming.ClientServerPairing;
 import com.ucp.bluetoothstreaming.ServerActivity;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,10 +29,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class BluetoothClientService extends Service {
 
-
+    private static final int BUFFER_COUNT_PAQUETS = 1000;
     public static final String TAG = "BLUETOOTH_CLIENT_SERVICE";
     public static final String TAG_INTENT = "BLUETOOTH_CLIENT_INTENT";
     public static final String SEND_MESSAGE_TAG = "com.app.ucp.bluetoothstreaming.Services.BluetoothClient.SEND_MESSAGE";
+    public static final String PLAY_TAG = "PLAYING_BABY";
 
 
     private final IBinder mBinder = new BluetoothClientService.LocalBinder();  // interface for clients that bind
@@ -137,7 +140,7 @@ public class BluetoothClientService extends Service {
             // TODO FIll
             Log.d(TAG, "Connected to the server !");
             Intent intent = new Intent(ClientServerPairing.FILTER);
-            intent.putExtra(SEND_MESSAGE_TAG,"Connected to Server");
+            intent.putExtra(SEND_MESSAGE_TAG, "Connected to Server");
             localBroadcastManager.sendBroadcast(intent);
 
             try {
@@ -157,15 +160,46 @@ public class BluetoothClientService extends Service {
                 if (rootFile.exists()) Log.d("SERVICE_ACTIVITY", output);
                 if (!localFile.exists()) {
                     localFile.createNewFile();
+                }else{
+                    localFile.delete();
+                    localFile.createNewFile();
                 }
                 FileOutputStream f = new FileOutputStream(localFile);
+
                 byte[] buffer = new byte[1024];
                 int len1 = 0;
-                while ((len1 =inputStream.read(buffer)) > 0) {
-                    f.write(buffer, 0, len1);
-                }
-                f.close();
+                int nbOfPaquetsReceived = 0;
+                boolean hasbeenPlayed = false;
 
+                FileDescriptor fileDescriptor = f.getFD();
+
+                while ((len1 = inputStream.read(buffer)) > 0) {
+                    nbOfPaquetsReceived++;
+                    Log.d(TAG, "Nbs of paquets received BEFORE: " + nbOfPaquetsReceived + "  READ SIZE : " + len1);
+
+                    f.write(buffer, 0, len1);
+                    //f.flush();
+                    //fileDescriptor.sync();
+
+                 /*   if (nbOfPaquetsReceived == BUFFER_COUNT_PAQUETS) {
+                        Intent i = new Intent(ClientServerPairing.FILTER);
+                        i.putExtra(PLAY_TAG, localFile.toString());
+                        localBroadcastManager.sendBroadcast(i);
+                        hasbeenPlayed = true;
+                    }
+
+*/
+                    Log.d(TAG, "Nbs of paquets received  AFTER: " + nbOfPaquetsReceived);
+                }
+                Log.d(TAG, "Sending Intent ");
+                f.close();
+                /*
+                Intent i = new Intent(ClientServerPairing.FILTER);
+                i.putExtra(PLAY_TAG, localFile.toString());
+                localBroadcastManager.sendBroadcast(i);
+                */
+
+                Log.d(TAG, "Intent Sended ");
             } catch (IOException e) {
                 Log.d("Error....", e.toString());
             }

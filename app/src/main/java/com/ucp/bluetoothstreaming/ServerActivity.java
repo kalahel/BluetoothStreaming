@@ -110,6 +110,11 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
         Toast.makeText(this, textReceived, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void playVideo(String textReceived) {
+
+    }
+
     /**
      * Defines callbacks for service binding, passed to bindService()
      * when the service is connected start the game
