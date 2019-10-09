@@ -6,12 +6,21 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.ucp.bluetoothstreaming.ClientActivity;
+import com.ucp.bluetoothstreaming.ServerActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class BluetoothClientService extends Service {
 
@@ -20,8 +29,7 @@ public class BluetoothClientService extends Service {
     public static final String TAG_INTENT = "BLUETOOTH_CLIENT_INTENT";
 
     private final IBinder mBinder = new BluetoothClientService.LocalBinder();  // interface for clients that bind
-    private Thread clientThread ;
-
+    private Thread clientThread;
 
 
     public BluetoothClientService() {
@@ -65,7 +73,7 @@ public class BluetoothClientService extends Service {
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-
+        private InputStream inputStream;
 
         public ConnectThread(BluetoothDevice device) {
             // Use a temporary object that is later assigned to mmSocket
@@ -119,7 +127,37 @@ public class BluetoothClientService extends Service {
 
         private void manageMyConnectedSocket(BluetoothSocket socket) {
             // TODO FIll
-            Log.d(TAG,"Connected to the server !");
+            Log.d(TAG, "Connected to the server !");
+            try {
+                inputStream = socket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                String rootDir = Environment.getExternalStorageDirectory()
+                        + File.separator + "Video";
+                File rootFile = new File(rootDir);
+                rootFile.mkdir();
+
+
+                File localFile = new File(rootFile, ServerActivity.OUTPUT_FILE_NAME);
+                String output = "PATH OF LOCAL FILE : " + localFile.getPath();
+                if (rootFile.exists()) Log.d("SERVICE_ACTIVITY", output);
+                if (!localFile.exists()) {
+                    localFile.createNewFile();
+                }
+                FileOutputStream f = new FileOutputStream(localFile);
+                byte[] buffer = new byte[1024];
+                int len1 = 0;
+                while ((len1 =inputStream.read(buffer)) > 0) {
+                    f.write(buffer, 0, len1);
+                }
+                f.close();
+
+            } catch (IOException e) {
+                Log.d("Error....", e.toString());
+            }
+
         }
     }
 
