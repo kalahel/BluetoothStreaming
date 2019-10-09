@@ -2,7 +2,6 @@ package com.ucp.bluetoothstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.R.layout;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -23,6 +22,8 @@ import java.util.Set;
 
 public class ClientActivity extends AppCompatActivity {
     public final static int REQUEST_ENABLE_BT = 42;
+    public final static String INTENT_SELECTOR = "BLUETOOTH_SELECTED_DEVICE";
+
     BluetoothAdapter bluetoothAdapter;
     ArrayList<BluetoothDevice> discoveredDevices = new ArrayList<>();
     ArrayList<BluetoothDevice> pairedDevices = new ArrayList<>();
@@ -57,40 +58,45 @@ public class ClientActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the selected item text from ListView
                 String selectedItem = (String) parent.getItemAtPosition(position);
-                selectedItem= selectedItem.substring(selectedItem.length()-17);
+                selectedItem = selectedItem.substring(selectedItem.length() - 17);
+                BluetoothDevice selectedDevice = null;
+                Log.d("TAG ITEM CLICK", "selected item :" + selectedItem);
 
-                Log.i("ITEM CLICK", "selected item :"+ selectedItem);
 
+                for (BluetoothDevice dev : discoveredDevices) {
+                    //Log.d("TAG ITEM CLICK", "selected item :" + selectedItem);
+
+                    if (dev.getAddress().equals(selectedItem)) {
+                        selectedDevice = dev;
+                        break;
+                    }
+                }
+                for (BluetoothDevice dev : pairedDevices) {
+                    //Log.d("TAG ITEM CLICK", "selected item :" + selectedItem);
+
+                    if (dev.getAddress().equals(selectedItem)) {
+                        selectedDevice = dev;
+                        break;
+                    }
+                }
+
+
+
+                Log.d(">>>>>>>>>>>>>>>>>>>ITEM CLICK", "selected item :" + selectedDevice.getAddress());
+
+                goToClientServerPairingActivity(selectedDevice);
 
             }
 
         });
 
         startResearch();
-        //registerReceiver(receiver, filter);
 
 
     }
 
-    /*
-        private final BroadcastReceiver receiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    BluetoothDevice dev = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    if (!discoveredDevices.contains(dev) && dev.getName() != null) {
-                        discoveredDevices.add(dev);
-                        Log.i("NEW", "Added " + dev.getName());
 
-
-                    }
-                }
-
-            }
-        };
-    */
     private BroadcastReceiver myReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -118,31 +124,6 @@ public class ClientActivity extends AppCompatActivity {
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(myReceiver);
     }
-
-    /*
-    public void refreshList(View view) {
-        Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
-        if (PairedDevices.size() > 0) {
-            for (BluetoothDevice dev : PairedDevices) {
-                if(!discoveredDevices.contains(dev))
-                    discoveredDevices.add(dev);
-
-            }
-        }
-
-        bluetoothAdapter.startDiscovery();
-
-        ListView listView = findViewById(R.id.listView);
-        ArrayList list = new ArrayList();
-        for (BluetoothDevice dev: discoveredDevices)
-        {
-            list.add(dev.getName() +"     "+dev.getAddress());
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
-        listView.setAdapter(arrayAdapter);
-
-    }
-    */
 
 
     public void refreshList(View view) {
@@ -173,6 +154,14 @@ public class ClientActivity extends AppCompatActivity {
     }
 
     private void updateListView() {
+        Set<BluetoothDevice> PairedDevices = bluetoothAdapter.getBondedDevices();
+        if (PairedDevices.size() > 0) {
+            for (BluetoothDevice dev : PairedDevices) {
+                if (!pairedDevices.contains(dev))
+                    pairedDevices.add(dev);
+
+            }
+        }
         ArrayList list = new ArrayList();
         for (BluetoothDevice dev : pairedDevices) {
             list.add(dev.getName() + "     " + dev.getAddress());
@@ -188,5 +177,10 @@ public class ClientActivity extends AppCompatActivity {
 
     }
 
+    public void goToClientServerPairingActivity(BluetoothDevice bluetoothDevice) {
+        Intent intent = new Intent(this, ClientServerPairing.class);
+        intent.putExtra(INTENT_SELECTOR,bluetoothDevice);
+        startActivity(intent);
+    }
 
 }
