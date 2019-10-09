@@ -22,9 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.ucp.bluetoothstreaming.Services.BluetoothClientService;
 import com.ucp.bluetoothstreaming.Services.BluetoothServerService;
 import com.ucp.bluetoothstreaming.Services.ClientReceiver;
 import com.ucp.bluetoothstreaming.Services.Displayable;
+import com.ucp.bluetoothstreaming.Services.DownloadService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -73,13 +75,11 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
         Intent bluetoothServiceIntent = new Intent(this, BluetoothServerService.class);
         bindService(bluetoothServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
 
-
         //broadcast receiver
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         BroadcastReceiver broadcastReceiver = new ClientReceiver(this);
         IntentFilter intentFilter = new IntentFilter(FILTER);
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
     }
 
     @Override
@@ -90,7 +90,9 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
     }
 
     public void startDownload(View view) {
-        new VideoDownloadTask().execute("");
+        Intent downloadService = new Intent(this, DownloadService.class);
+        startService(downloadService);
+
     }
 
     public void switchActivated(View view) {
@@ -126,9 +128,14 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
 
     @Override
     public void updateProgressBar(int progress) {
-        this.progressBar.setVisibility(View.VISIBLE);
-        this.downloadTextView.setVisibility(View.VISIBLE);
-        this.progressBar.setProgress(progress);
+        if (progress >= 96) {
+            this.progressBar.setVisibility(View.INVISIBLE);
+            this.downloadTextView.setVisibility(View.INVISIBLE);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            downloadTextView.setVisibility(View.VISIBLE);
+            this.progressBar.setProgress(progress);
+        }
     }
 
     /**
@@ -153,89 +160,4 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
     };
 
 
-    /**
-     * Asynchronous task responsible for the download of the video
-     */
-    private class VideoDownloadTask extends AsyncTask<String, Integer, VideoDownloadTask.Result> {
-        ProgressBar progressBar;
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar = findViewById(R.id.downloadProgressBar);
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Result doInBackground(String... strings) {
-            try {
-                String rootDir = Environment.getExternalStorageDirectory()
-                        + File.separator + "Video";
-                File rootFile = new File(rootDir);
-                rootFile.mkdir();
-                URL url = new URL(ServerActivity.VIDEO_URL);
-                HttpsURLConnection httpURLConnection = (HttpsURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.setDoOutput(false);
-                httpURLConnection.connect();
-                int status = httpURLConnection.getResponseCode();
-
-                if (status != HttpURLConnection.HTTP_OK) {
-                    // httpURLConnection.getErrorStream();
-                    Log.d("SERVICE_ACTIVITY", "HTTP STATUS NOT OK");
-                }
-
-                File localFile = new File(rootFile, ServerActivity.OUTPUT_FILE_NAME);
-                String output = "PATH OF LOCAL FILE : " + localFile.getPath();
-                if (rootFile.exists()) Log.d("SERVICE_ACTIVITY", output);
-                if (!localFile.exists()) {
-                    localFile.createNewFile();
-                }
-                FileOutputStream f = new FileOutputStream(localFile);
-                InputStream in = httpURLConnection.getInputStream();
-                byte[] buffer = new byte[1024];
-                int len1 = 0;
-                while ((len1 = in.read(buffer)) > 0) {
-                    f.write(buffer, 0, len1);
-                }
-                f.close();
-
-            } catch (IOException e) {
-                Log.d("Error....", e.toString());
-            }
-            return null;
-        }
-
-        /**
-         * Wrapper class that serves as a union of a result value and an exception. When the
-         * download task has completed, either the result value or exception can be a non-null
-         * value. This allows you to pass exceptions to the UI thread that were thrown during
-         * doInBackground().
-         */
-        class Result {
-            public String mResultValue;
-            public Exception mException;
-
-            public Result(String resultValue) {
-                mResultValue = resultValue;
-            }
-
-            public Result(Exception exception) {
-                mException = exception;
-            }
-        }
-
-        /**
-         * Updating progress bar
-         */
-        protected void onProgressUpdate(Integer... values) {
-            // setting progress percentage
-            super.onProgressUpdate(values);
-            this.progressBar.setProgress(values[0]);
-            //progressDialog.setProgress(Integer.parseInt(progress[0]));
-        }
-
-
-    }
 }

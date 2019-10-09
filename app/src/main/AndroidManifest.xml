@@ -19,9 +19,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".Services.BluetoothClientService"
+            android:name=".Services.DownloadService"
             android:enabled="true"
             android:exported="true"></service>
+        <service
+            android:name=".Services.BluetoothClientService"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity android:name=".ClientServerPairing" />
 
