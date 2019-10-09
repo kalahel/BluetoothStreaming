@@ -10,7 +10,10 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.ucp.bluetoothstreaming.ClientActivity;
+import com.ucp.bluetoothstreaming.ClientServerPairing;
 import com.ucp.bluetoothstreaming.ServerActivity;
 
 import java.io.File;
@@ -27,9 +30,12 @@ public class BluetoothClientService extends Service {
 
     public static final String TAG = "BLUETOOTH_CLIENT_SERVICE";
     public static final String TAG_INTENT = "BLUETOOTH_CLIENT_INTENT";
+    public static final String SEND_MESSAGE_TAG = "com.app.ucp.bluetoothstreaming.Services.BluetoothClient.SEND_MESSAGE";
+
 
     private final IBinder mBinder = new BluetoothClientService.LocalBinder();  // interface for clients that bind
     private Thread clientThread;
+    private LocalBroadcastManager localBroadcastManager;
 
 
     public BluetoothClientService() {
@@ -38,6 +44,8 @@ public class BluetoothClientService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
 
     }
 
@@ -128,6 +136,10 @@ public class BluetoothClientService extends Service {
         private void manageMyConnectedSocket(BluetoothSocket socket) {
             // TODO FIll
             Log.d(TAG, "Connected to the server !");
+            Intent intent = new Intent(ClientServerPairing.FILTER);
+            intent.putExtra(SEND_MESSAGE_TAG,"Connected to Server");
+            localBroadcastManager.sendBroadcast(intent);
+
             try {
                 inputStream = socket.getInputStream();
             } catch (IOException e) {
