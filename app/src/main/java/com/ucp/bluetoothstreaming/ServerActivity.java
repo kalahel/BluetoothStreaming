@@ -79,6 +79,7 @@ public class ServerActivity extends AppCompatActivity {
                 bindService(bluetoothServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
             }
             Intent startServiceIntent = new Intent(this, BluetoothServerService.class);
+            startServiceIntent.putExtra(BluetoothServerService.START_ROUTINE_TAG, true);
             startService(startServiceIntent);
 
         } else {
