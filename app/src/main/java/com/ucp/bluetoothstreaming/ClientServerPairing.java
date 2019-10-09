@@ -86,7 +86,7 @@ public class ClientServerPairing extends AppCompatActivity implements Displayabl
 
     @Override
     public void updateProgressBar(int progress) {
-        if (progress >= 99) {
+        if (progress >= 96) {
             this.progressBar.setVisibility(View.INVISIBLE);
             this.downloadTextView.setVisibility(View.INVISIBLE);
         }

@@ -31,10 +31,12 @@ import javax.net.ssl.HttpsURLConnection;
 public class BluetoothClientService extends Service {
 
     private static final int BUFFER_COUNT_PAQUETS = 3000;
+    public static final float FILE_SIZE = 5785;
     public static final String TAG = "BLUETOOTH_CLIENT_SERVICE";
     public static final String TAG_INTENT = "BLUETOOTH_CLIENT_INTENT";
     public static final String SEND_MESSAGE_TAG = "com.app.ucp.bluetoothstreaming.Services.BluetoothClient.SEND_MESSAGE";
     public static final String PLAY_TAG = "PLAYING_BABY";
+    public static final String UPDATE_TAG = "UPDATE_TAG";
 
 
     private final IBinder mBinder = new BluetoothClientService.LocalBinder();  // interface for clients that bind
@@ -180,7 +182,9 @@ public class BluetoothClientService extends Service {
                         f.flush();
                         fileDescriptor.sync();
 
-
+                        Intent i = new Intent(ClientServerPairing.FILTER);
+                        i.putExtra(UPDATE_TAG, (int) (((float) nbOfPaquetsReceived / FILE_SIZE) * 100));
+                        localBroadcastManager.sendBroadcast(i);
 
 
                         Log.d(TAG, "Nbs of paquets received  AFTER: " + nbOfPaquetsReceived);
