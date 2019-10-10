@@ -97,7 +97,7 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
 
     public void switchActivated(View view) {
         if (this.ShareSwitch.isChecked()) {
-            Toast.makeText(this, "CHECKED", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sharing enabled", Toast.LENGTH_SHORT).show();
             if (!mBound) {
                 Intent bluetoothServiceIntent = new Intent(this, BluetoothServerService.class);
                 bindService(bluetoothServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -107,7 +107,7 @@ public class ServerActivity extends AppCompatActivity implements Displayable {
             startService(startServiceIntent);
 
         } else {
-            Toast.makeText(this, "NOT CHECKED", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sharing disabled", Toast.LENGTH_SHORT).show();
             Intent stopServiceIntent = new Intent(this, BluetoothServerService.class);
             stopServiceIntent.putExtra(BluetoothServerService.START_ROUTINE_TAG, false);
             stopService(stopServiceIntent);
